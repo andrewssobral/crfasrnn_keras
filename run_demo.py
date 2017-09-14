@@ -22,18 +22,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from crfrnn_model import get_crfrnn_model_def
 import util
 import sys
 import cv2
+import numpy as np
+from crfrnn_model import get_crfrnn_model_def
 
 def main():
-    if(len(sys.argv) > 2):
+    if(len(sys.argv) > 3):
         input_file = sys.argv[1]
         output_file = sys.argv[2]
+        segment_file = sys.argv[3]
     else:
         input_file = "image.jpg"
         output_file = "labels.png"
+        segment_file = "segmentation.png"
     print(input_file, output_file)
 
     # Download the model from https://goo.gl/ciEYZi
@@ -47,8 +50,10 @@ def main():
     segmentation = util.get_label_image(probs, img_h, img_w)
     segmentation.save(output_file)
     
-    im_input = cv2.imread("input.jpg", cv2.IMREAD_COLOR)
-    im_output = cv2.imread("output.png", cv2.IMREAD_COLOR)
+    im_input = cv2.imread(input_file, cv2.IMREAD_COLOR)
+    img_h,img_w,ch = im_input.shape
+    im_output = cv2.imread(output_file, cv2.IMREAD_COLOR)
+    im_output = cv2.resize(im_output, (img_w, img_h), interpolation = cv2.INTER_CUBIC)
     alpha = 0.5
     beta = (1.0 - alpha)
     gamma = 0.
@@ -58,7 +63,7 @@ def main():
     im_colormap = cv2.imread("colormap.png", cv2.IMREAD_COLOR)
     im_colormap = cv2.resize(im_colormap, (cols, rows), interpolation = cv2.INTER_CUBIC)
     img_segment = np.concatenate((img_segment, im_colormap), axis=1)
-    cv2.imwrite("segmentation.png", img_segment)
+    cv2.imwrite(segment_file, img_segment)
 
 if __name__ == "__main__":
     main()

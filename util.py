@@ -68,7 +68,7 @@ def get_preprocessed_image(file_name):
     mean_values = mean_values.reshape(1, 1, 3)
     #im = np.array(Image.open(file_name)).astype(np.float32)
     im = Image.open(file_name)
-    print('Original size: ', im.size)
+    #print('Original size: ', im.size)
     img_w, img_h = im.size
     if img_h > 500 or img_w > 500:
         if img_h > img_w:
@@ -78,9 +78,9 @@ def get_preprocessed_image(file_name):
             new_width  = 500
             new_height = int(new_width * img_h / img_w)
         new_shape = (new_width, new_height)
-        print('New size: ', new_shape)
+        #print('New size: ', new_shape)
         im.thumbnail(new_shape, Image.ANTIALIAS)
-        im.save("input.jpg", "JPEG")
+        #im.save("input.jpg", "JPEG")
     im = np.array(im).astype(np.float32)
     img_h, img_w, img_c = im.shape
     assert im.ndim == 3, "Only RGB images are supported."
