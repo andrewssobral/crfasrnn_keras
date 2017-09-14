@@ -66,11 +66,26 @@ def get_preprocessed_image(file_name):
 
     mean_values = np.array([123.68, 116.779, 103.939], dtype=np.float32)  # RGB mean values
     mean_values = mean_values.reshape(1, 1, 3)
-    im = np.array(Image.open(file_name)).astype(np.float32)
+    #im = np.array(Image.open(file_name)).astype(np.float32)
+    im = Image.open(file_name)
+    print('Original size: ', im.size)
+    img_w, img_h = im.size
+    if img_h > 500 or img_w > 500:
+        if img_h > img_w:
+            new_height = 500
+            new_width  = int(new_height * img_w / img_h)
+        else:
+            new_width  = 500
+            new_height = int(new_width * img_h / img_w)
+        new_shape = (new_width, new_height)
+        print('New size: ', new_shape)
+        im.thumbnail(new_shape, Image.ANTIALIAS)
+        im.save("input.jpg", "JPEG")
+    im = np.array(im).astype(np.float32)
+    img_h, img_w, img_c = im.shape
     assert im.ndim == 3, "Only RGB images are supported."
     im = im - mean_values
     im = im[:, :, ::-1]
-    img_h, img_w, img_c = im.shape
     assert img_c == 3, "Only RGB images are supported."
     if img_h > 500 or img_w > 500:
         raise ValueError("Please resize your images to be not bigger than 500 x 500.")
